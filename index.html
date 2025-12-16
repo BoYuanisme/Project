@@ -5,14 +5,13 @@
   <title>找廁所</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
-<body>
-  <h2>找廁所 MVP</h2>
+<body>應急助手<h2>h22
 
   <button onclick="getProfile()">我的資料</button>
 
   <script>
     async function getProfile() {
-      await liff.init({ liffId: "你的 LIFF ID" });
+      await liff.init({ liffId: "2008702789-dC55oTz1" });
       const profile = await liff.getProfile();
       alert(profile.displayName);
     }
