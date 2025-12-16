@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>找廁所</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+  <h2>找廁所 MVP</h2>
+
+  <button onclick="getProfile()">我的資料</button>
+
+  <script>
+    async function getProfile() {
+      await liff.init({ liffId: "你的 LIFF ID" });
+      const profile = await liff.getProfile();
+      alert(profile.displayName);
+    }
+  </script>
+</body>
+</html>
