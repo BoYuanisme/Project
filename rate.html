@@ -49,7 +49,7 @@
         .type-selector {
             display: flex;
             gap: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 20px; /* 稍微縮小間距 */
             justify-content: center;
         }
         
@@ -74,6 +74,39 @@
             color: white;
             border-color: #007bff;
             box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        /* --- 新增：地點輸入框樣式 --- */
+        .location-input-box {
+            background: #f8f9fa;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .location-label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .location-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box; /* 確保 padding 不會撐爆寬度 */
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .location-input:focus {
+            border-color: #007bff;
+            background: white;
         }
 
         /* --- 評分項目列表 --- */
@@ -145,15 +178,15 @@
 
         /* --- 彈出視窗 (Modal) 樣式 --- */
         .modal-overlay {
-            display: none; /* 預設隱藏 */
+            display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+            background: rgba(0, 0, 0, 0.5);
             z-index: 999;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(2px); /* 背景稍微模糊 */
+            backdrop-filter: blur(2px);
         }
 
         .modal-box {
@@ -180,13 +213,13 @@
 
         .modal-icon {
             font-size: 24px;
-            color: #4CAF50; /* 綠色勾勾 */
+            color: #4CAF50;
         }
 
         .modal-title {
             font-size: 18px;
             font-weight: bold;
-            color: #333; /* 黑色標題 */
+            color: #333;
         }
 
         .modal-footer {
@@ -195,7 +228,7 @@
         }
 
         .modal-close-btn {
-            color: #007bff; /* 藍色文字 */
+            color: #007bff;
             font-weight: bold;
             text-decoration: none;
             font-size: 16px;
@@ -243,6 +276,11 @@
             </div>
 
             <form id="rateForm">
+                
+                <div class="location-input-box">
+                    <label class="location-label"><i class="fas fa-map-marker-alt"></i> 地點名稱 / 資訊</label>
+                    <input type="text" class="location-input" placeholder="例如：台北轉運站 1F 廁所" required>
+                </div>
                 
                 <div id="group-toilet" class="rating-group" style="display: block;">
                     <div class="rating-row">
