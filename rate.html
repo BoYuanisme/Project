@@ -1,1 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地點評分</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* --- 全域設定 --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f7f9fc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
 
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            min-height: 500px;
+            position: relative;
+        }
+
+        /* 導覽列 */
+        .nav-back {
+            text-decoration: none;
+            color: #666;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        #pageTitle {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* --- 類型選擇按鈕 (膠囊狀) --- */
+        .type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        
+        .type-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .type-btn:hover { background: #f0f0f0; }
+
+        .type-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        /* --- 評分項目列表 (模仿你提供的 UI 圖) --- */
+        .rating-group {
+            display: none; /* 預設隱藏，選了類型才顯示 */
+            animation: fadeIn 0.3s;
+        }
+        
+        .rating-row {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+        }
+
+        .rating-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            color: #444;
+            font-size: 15px;
+        }
+
+        .rating-label i {
+            font-size: 18px;
+            color: #666;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* --- 星星樣式 --- */
+        .stars {
+            display: flex;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .star {
+            font-size: 20px;
+            color: #ddd; /* 未選中是灰色 */
+            transition: color 0.2s;
+        }
+
+        .star.selected {
+            color: #ffc107; /* 選中是金黃色 */
+        }
+
+        /* --- 送出按鈕 --- */
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+            transition: transform 0.2s;
+        }
+        .btn-submit:active { transform: scale(0.98); }
+
+        /* --- 感謝文字 (紅色) --- */
+        #successMessage {
+            display: none;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        .success-text {
+            color: #d93025; /* 紅色 */
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        /* 動畫 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="index.html" class="nav-back">← 回到主選單</a>
+
+        <div id="mainContent">
+            <h2 id="pageTitle">地點評分</h2>
+
+            <div class="type-selector">
+                <button class="type-btn active" onclick="switchType('toilet')">
+                    <i class="fas fa-restroom"></i> 廁所
+                </button>
+                <button class="type-btn" onclick="switchType('parking')">
+                    <i class="fas fa-parking"></i> 停車位
+                </button>
+                <button class="type-btn" onclick="switchType('water')">
+                    <i class="fas fa-tint"></i> 飲水機
+                </button>
+            </div>
+
+            <form id="rateForm">
+                
+                <div id="group-toilet" class="rating-group" style="display: block;">
+                    <div class="rating-row">
+                        <div class="rating-label"><i class="fas fa-broom"></i> 乾淨程度</div>
+                        <div class="stars" data-name="toilet-clean">
+                            <i class="fas fa-star star" onclick="rate(this, 1)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 2)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 3)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 4)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 5)"></i>
+                        </div>
+                    </div>
+                    <div class="rating-row">
+                        <div class="rating-label"><i class="fas fa-wind"></i> 氣味異味</div>
+                        <div class="stars" data-name="toilet-smell">
+                            <i class="fas fa-star star" onclick="rate(this, 1)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 2)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 3)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 4)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 5)"></i>
+                        </div>
+                    </div>
+                    <div class="rating-row">
+                        <div class="rating-label"><i class="fas fa-fan"></i> 通風程度</div>
+                        <div class="stars" data-name="toilet-air">
+                            <i class="fas fa-star star" onclick="rate(this, 1)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 2)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 3)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 4)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 5)"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="group-parking" class="rating-group">
+                    <div class="rating-row">
+                        <div class="rating-label"><i class="fas fa-road"></i> 標線清晰</div>
+                        <div class="stars" data-name="park-line">
+                            <i class="fas fa-star star" onclick="rate(this, 1)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 2)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 3)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 4)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 5)"></i>
+                        </div>
+                    </div>
+                    <div class="rating-row">
+                        <div class="rating-label"><i class="fas fa-car-side"></i> 車位寬敞</div>
+                        <div class="stars" data-name="park-space">
+                            <i class="fas fa-star star" onclick="rate(this, 1)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 2)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 3)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 4)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 5)"></i>
+                        </div>
+                    </div>
+                    <div class="rating-row">
+                        <div class="rating-label"><i class="fas fa-dollar-sign"></i> 收費合理</div>
+                        <div class="stars" data-name="park-price">
+                            <i class="fas fa-star star" onclick="rate(this, 1)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 2)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 3)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 4)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 5)"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="group-water" class="rating-group">
+                    <div class="rating-row">
+                        <div class="rating-label"><i class="fas fa-glass-whiskey"></i> 水質味道</div>
+                        <div class="stars" data-name="water-taste">
+                            <i class="fas fa-star star" onclick="rate(this, 1)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 2)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 3)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 4)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 5)"></i>
+                        </div>
+                    </div>
+                    <div class="rating-row">
+                        <div class="rating-label"><i class="fas fa-hands-wash"></i> 機器清潔</div>
+                        <div class="stars" data-name="water-clean">
+                            <i class="fas fa-star star" onclick="rate(this, 1)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 2)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 3)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 4)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 5)"></i>
+                        </div>
+                    </div>
+                    <div class="rating-row">
+                        <div class="rating-label"><i class="fas fa-faucet"></i> 出水衛生</div>
+                        <div class="stars" data-name="water-spout">
+                            <i class="fas fa-star star" onclick="rate(this, 1)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 2)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 3)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 4)"></i>
+                            <i class="fas fa-star star" onclick="rate(this, 5)"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">確認送出</button>
+            </form>
+        </div>
+
+        <div id="successMessage">
+            <p class="success-text">感謝您的評分~</p>
+            <a href="index.html" class="btn-submit" style="background: #6c757d; text-align: center; text-decoration: none; display: block;">回到主選單</a>
+        </div>
+
+    </div>
+
+    <script>
+        // 1. 切換評分種類的邏輯
+        function switchType(type) {
+            // 變更按鈕樣式
+            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // 隱藏所有區塊
+            document.querySelectorAll('.rating-group').forEach(group => group.style.display = 'none');
+
+            // 顯示選中的區塊
+            document.getElementById('group-' + type).style.display = 'block';
+        }
+
+        // 2. 星星評分點擊邏輯
+        function rate(star, value) {
+            let parent = star.parentElement;
+            let stars = parent.querySelectorAll('.star');
+            
+            // 清除該行所有星星的選取狀態
+            stars.forEach(s => s.classList.remove('selected'));
+
+            // 把點擊的那顆以前的星星都點亮
+            for (let i = 0; i < value; i++) {
+                stars[i].classList.add('selected');
+            }
+        }
+
+        // 3. 送出表單邏輯
+        document.getElementById('rateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // 隱藏內容區
+            document.getElementById('mainContent').style.display = 'none';
+
+            // 顯示感謝訊息
+            document.getElementById('successMessage').style.display = 'block';
+        });
+    </script>
+
+</body>
+</html>
