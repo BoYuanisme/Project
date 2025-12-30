@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>新增地點</title>
     <style>
-        /* --- 這裡都沒動，維持原本的漂亮介面 --- */
+        /* --- 全域設定 --- */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: #f7f9fc;
@@ -24,8 +24,6 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            min-height: 400px; 
-            position: relative;
         }
 
         .nav-back {
@@ -35,8 +33,9 @@
             display: inline-block;
             margin-bottom: 20px;
         }
-        
-        #pageTitle {
+        .nav-back:hover { color: #007bff; }
+
+        h2 {
             margin-top: 0;
             color: #333;
             text-align: center;
@@ -53,7 +52,7 @@
             font-size: 16px;
         }
 
-        /* 選項樣式 */
+        /* --- 1. Radio Buttons --- */
         .radio-group { display: flex; gap: 15px; flex-wrap: wrap; }
         .radio-group input[type="radio"] { display: none; }
         .radio-label {
@@ -75,32 +74,45 @@
             box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
         }
 
-        /* 輸入框與按鈕 */
-        .input-group { display: flex; align-items: center; gap: 10px; }
+        /* --- 2. 地址輸入框 + GPS 按鈕 (新樣式) --- */
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* 輸入框和按鈕的間距 */
+        }
+
         .input-line {
-            flex: 1;
+            flex: 1; /* 佔滿剩餘空間 */
             border: none;
             border-bottom: 2px solid #ccc;
             padding: 10px 0;
             font-size: 16px;
             outline: none;
+            transition: border-color 0.3s;
             background: transparent;
             border-radius: 0;
         }
         .input-line:focus { border-bottom-color: #007bff; }
 
+        /* GPS 按鈕樣式 */
         .btn-gps {
             padding: 8px 12px;
-            background-color: #28a745;
+            background-color: #28a745; /* 綠色，代表定位 */
             color: white;
             border: none;
             border-radius: 8px;
             font-size: 14px;
             cursor: pointer;
-            white-space: nowrap;
+            white-space: nowrap; /* 防止文字換行 */
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
+        .btn-gps:hover { background-color: #218838; }
+        .btn-gps:disabled { background-color: #ccc; cursor: not-allowed; }
 
-        /* 圖片上傳 */
+        /* --- 3. 圖片上傳區 --- */
         .image-upload-box {
             display: block; 
             border: 2px dashed #cbd5e0;
@@ -108,10 +120,13 @@
             padding: 30px;
             text-align: center;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.3s, border-color 0.3s;
             background-color: #f8fafc;
         }
-        .image-upload-box:hover { background-color: #eef2f7; border-color: #007bff; }
+        .image-upload-box:hover {
+            background-color: #eef2f7;
+            border-color: #007bff;
+        }
         .icon-placeholder { font-size: 40px; margin-bottom: 10px; display: block; color: #6c757d; }
         .icon-camera::before { content: "📷"; }
         .upload-text { color: #888; font-size: 14px; }
@@ -122,10 +137,11 @@
             margin-top: 15px;
             border-radius: 12px;
             display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             object-fit: cover;
         }
 
-        /* 送出按鈕 */
+        /* --- Submit Button --- */
         .btn-submit {
             width: 100%;
             padding: 15px;
@@ -141,21 +157,6 @@
             transition: transform 0.2s;
         }
         .btn-submit:active { transform: scale(0.98); }
-
-        /* --- ✨ 這裡是你要求的文字樣式 ✨ --- */
-        #successMessage {
-            display: none; /* 一開始先藏起來 */
-            text-align: center;
-            padding-top: 50px;
-        }
-
-        .success-text {
-            color: #d93025; /* 類似你截圖的紅色 */
-            font-size: 18px;
-            line-height: 1.6;
-            margin-bottom: 40px;
-            font-weight: 500;
-        }
     </style>
 </head>
 <body>
@@ -163,7 +164,7 @@
     <div class="container">
         <a href="index.html" class="nav-back">← 回到主選單</a>
 
-        <h2 id="pageTitle">新增地點</h2>
+        <h2>新增地點</h2>
 
         <form id="addForm">
             <div class="form-group">
@@ -188,8 +189,11 @@
                 <label class="label-title">2. 請輸入地址或匯入定位：</label>
                 <div class="input-group">
                     <input type="text" id="addressInput" class="input-line" placeholder="輸入地址或點擊定位" required>
-                    <button type="button" class="btn-gps" onclick="getGPS()">📍 定位</button>
+                    <button type="button" class="btn-gps" onclick="getGPS()">
+                        📍 點我定位
+                    </button>
                 </div>
+                <div style="font-size: 12px; color: #888; margin-top: 5px;">* 定位將填入經緯度座標</div>
             </div>
 
             <div class="form-group">
@@ -204,13 +208,6 @@
 
             <button type="submit" class="btn-submit">確認新增</button>
         </form>
-
-        <div id="successMessage">
-            <p class="success-text">
-                感謝您新增的地點，我們將在審查過後決定是否新增此地點~
-            </p>
-        </div>
-
     </div>
 
     <script>
@@ -227,43 +224,51 @@
             }
         }
 
-        // GPS 定位功能
+        // --- 新增：GPS 定位功能 ---
         function getGPS() {
             var inputField = document.getElementById('addressInput');
             var btn = document.querySelector('.btn-gps');
 
+            // 檢查瀏覽器是否支援定位
             if (!navigator.geolocation) {
-                alert("瀏覽器不支援定位");
+                alert("您的瀏覽器不支援定位功能");
                 return;
             }
+
+            // 變更按鈕狀態，讓使用者知道正在運作
             btn.textContent = "定位中...";
             btn.disabled = true;
 
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    var lat = position.coords.latitude.toFixed(5);
-                    var lng = position.coords.longitude.toFixed(5);
-                    inputField.value = `(${lat}, ${lng})`;
-                    btn.textContent = "✅ 完成";
-                    setTimeout(() => { btn.textContent = "📍 定位"; btn.disabled = false; }, 2000);
-                },
-                function() {
-                    alert("無法取得位置");
+            function success(position) {
+                var latitude  = position.coords.latitude;
+                var longitude = position.coords.longitude;
+                
+                // 格式化輸出：直接顯示 Google Maps 座標連結或純座標
+                // 這裡示範填入「座標格式」，方便直接複製去地圖查
+                inputField.value = `(${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
+                
+                // 恢復按鈕
+                btn.textContent = "✅ 定位成功";
+                setTimeout(() => { 
+                    btn.textContent = "📍 重新定位"; 
                     btn.disabled = false;
-                }
-            );
+                }, 2000);
+            }
+
+            function error() {
+                alert("無法取得您的位置，請確認已開啟 GPS 權限。");
+                btn.textContent = "📍 點我定位";
+                btn.disabled = false;
+            }
+
+            // 開始定位
+            navigator.geolocation.getCurrentPosition(success, error);
         }
 
-        // --- 這裡控制顯示那段紅字 ---
+        // 表單送出
         document.getElementById('addForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // 1. 阻止網頁重整
-
-            // 2. 把表單和標題隱藏起來
-            document.getElementById('addForm').style.display = 'none';
-            document.getElementById('pageTitle').style.display = 'none';
-
-            // 3. 把那段感謝文字顯示出來
-            document.getElementById('successMessage').style.display = 'block';
+            e.preventDefault();
+            alert("✅ 資料已送出！\n\n地址/座標：" + document.getElementById('addressInput').value);
         });
     </script>
 
