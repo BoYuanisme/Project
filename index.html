@@ -1,20 +1,14 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>找廁所</title>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <title>我的第一個網頁</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+        h1 { color: #2c3e50; }
+    </style>
 </head>
-<body>應急助手<h2>h22
-
-  <button onclick="getProfile()">我的資料</button>
-
-  <script>
-    async function getProfile() {
-      await liff.init({ liffId: "2008702789-dC55oTz1" });
-      const profile = await liff.getProfile();
-      alert(profile.displayName);
-    }
-  </script>
+<body>
+    <h1>哈囉，世界！</h1>
+    <p>這是我用 index.html 做出的一個簡單網頁。</p>
 </body>
 </html>
