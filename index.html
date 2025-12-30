@@ -1,14 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
-    <title>我的第一個網頁</title>
+    <meta charset="UTF-8">
+    <title>應急助手</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
-        h1 { color: #2c3e50; }
+        body { font-family: sans-serif; text-align: center; padding: 50px; background-color: #f4f7f6; }
+        .menu-container { display: flex; flex-direction: column; gap: 20px; align-items: center; }
+        .btn { 
+            display: block; width: 200px; padding: 15px; 
+            background: #007bff; color: white; 
+            text-decoration: none; border-radius: 8px; font-weight: bold;
+        }
+        .btn:hover { background: #0056b3; }
     </style>
 </head>
 <body>
-    <h1>哈囉，世界！</h1>
-    <p>這是我用 index.html 做出的一個簡單網頁。</p>
+    <h1>📍 應急助手</h1>
+    <div class="menu-container">
+        <a href="add.html" class="btn">➕ 新增地點</a>
+        <a href="rate.html" class="btn">⭐ 地點評分</a>
+        <a href="report.html" class="btn">⚠️ 問題回報</a>
+    </div>
 </body>
 </html>
