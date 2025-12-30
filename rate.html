@@ -45,7 +45,7 @@
             margin-bottom: 20px;
         }
 
-        /* --- 類型選擇按鈕 (膠囊狀) --- */
+        /* --- 類型選擇按鈕 --- */
         .type-selector {
             display: flex;
             gap: 10px;
@@ -76,9 +76,9 @@
             box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
         }
 
-        /* --- 評分項目列表 (模仿你提供的 UI 圖) --- */
+        /* --- 評分項目列表 --- */
         .rating-group {
-            display: none; /* 預設隱藏，選了類型才顯示 */
+            display: none;
             animation: fadeIn 0.3s;
         }
         
@@ -118,12 +118,12 @@
 
         .star {
             font-size: 20px;
-            color: #ddd; /* 未選中是灰色 */
+            color: #ddd;
             transition: color 0.2s;
         }
 
         .star.selected {
-            color: #ffc107; /* 選中是金黃色 */
+            color: #ffc107;
         }
 
         /* --- 送出按鈕 --- */
@@ -143,17 +143,35 @@
         }
         .btn-submit:active { transform: scale(0.98); }
 
-        /* --- 感謝文字 (紅色) --- */
+        /* --- 感謝文字與按鈕區塊 --- */
         #successMessage {
             display: none;
             text-align: center;
             padding-top: 100px;
         }
 
+        /* 1. 修改：文字顏色改為黑色 */
         .success-text {
-            color: #d93025; /* 紅色 */
+            color: #333; /* 黑色 */
             font-size: 18px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        /* 2. 修改：關閉按鈕樣式 (仿照灰色確認按鈕) */
+        .btn-close {
+            background-color: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 8px 25px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+        .btn-close:hover {
+            background-color: #d0d0d0;
         }
 
         /* 動畫 */
@@ -291,47 +309,34 @@
 
         <div id="successMessage">
             <p class="success-text">感謝您的評分~</p>
-            <a href="index.html" class="btn-submit" style="background: #6c757d; text-align: center; text-decoration: none; display: block;">回到主選單</a>
+            <a href="index.html" class="btn-close">關閉</a>
         </div>
 
     </div>
 
     <script>
-        // 1. 切換評分種類的邏輯
+        // 切換評分種類
         function switchType(type) {
-            // 變更按鈕樣式
             document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
-
-            // 隱藏所有區塊
             document.querySelectorAll('.rating-group').forEach(group => group.style.display = 'none');
-
-            // 顯示選中的區塊
             document.getElementById('group-' + type).style.display = 'block';
         }
 
-        // 2. 星星評分點擊邏輯
+        // 星星評分
         function rate(star, value) {
             let parent = star.parentElement;
             let stars = parent.querySelectorAll('.star');
-            
-            // 清除該行所有星星的選取狀態
             stars.forEach(s => s.classList.remove('selected'));
-
-            // 把點擊的那顆以前的星星都點亮
             for (let i = 0; i < value; i++) {
                 stars[i].classList.add('selected');
             }
         }
 
-        // 3. 送出表單邏輯
+        // 送出表單
         document.getElementById('rateForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
-            // 隱藏內容區
             document.getElementById('mainContent').style.display = 'none';
-
-            // 顯示感謝訊息
             document.getElementById('successMessage').style.display = 'block';
         });
     </script>
