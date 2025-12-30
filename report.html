@@ -1,1 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>問題回報</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* --- 全域設定 (與之前保持一致) --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f7f9fc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
 
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            min-height: 600px;
+            position: relative;
+        }
+
+        /* 導覽列 */
+        .nav-back {
+            text-decoration: none;
+            color: #666;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        #pageTitle {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* --- 類型選擇按鈕 --- */
+        .type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        
+        .type-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .type-btn:hover { background: #f0f0f0; }
+
+        .type-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        /* --- 問題列表樣式 --- */
+        .report-group {
+            display: none; /* 預設隱藏，透過 JS 切換 */
+            animation: fadeIn 0.3s;
+        }
+
+        .question-item {
+            margin-bottom: 25px;
+        }
+
+        .question-label {
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 16px;
+        }
+
+        /* 選項 (Radio Buttons) 樣式 */
+        .radio-options {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #555;
+        }
+
+        input[type="radio"] {
+            transform: scale(1.3); /* 放大圓圈讓手機好點選 */
+            cursor: pointer;
+            accent-color: #007bff;
+        }
+
+        /* 文字輸入框樣式 (底線風格) */
+        .input-line {
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid #ddd;
+            padding: 8px 0;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+            background: transparent;
+        }
+
+        .input-line:focus {
+            border-bottom-color: #007bff;
+        }
+
+        /* --- 送出按鈕 --- */
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+            transition: transform 0.2s;
+        }
+        .btn-submit:active { transform: scale(0.98); }
+
+        /* --- 彈出視窗 (Modal) 樣式 --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-box {
+            background: white;
+            width: 85%;
+            max-width: 320px;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 15px;
+            margin-bottom: 5px;
+        }
+
+        .modal-icon {
+            font-size: 24px;
+            color: #4CAF50;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .modal-footer {
+            text-align: right;
+            padding-top: 5px;
+        }
+
+        .modal-close-btn {
+            color: #007bff;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        /* 動畫 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="index.html" class="nav-back">← 回到主選單</a>
+
+        <h2 id="pageTitle">問題回報</h2>
+
+        <div class="type-selector">
+            <button class="type-btn active" onclick="switchType('toilet')">
+                <i class="fas fa-restroom"></i> 廁所
+            </button>
+            <button class="type-btn" onclick="switchType('parking')">
+                <i class="fas fa-parking"></i> 停車位
+            </button>
+            <button class="type-btn" onclick="switchType('water')">
+                <i class="fas fa-tint"></i> 飲水機
+            </button>
+        </div>
+
+        <form id="reportForm">
+            
+            <div id="group-toilet" class="report-group" style="display: block;">
+                <div class="question-item">
+                    <label class="question-label">1. 是否提供免費衛生紙：</label>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="toilet-paper" value="yes"> 是</label>
+                        <label class="radio-label"><input type="radio" name="toilet-paper" value="no"> 否</label>
+                    </div>
+                </div>
+                <div class="question-item">
+                    <label class="question-label">2. 是否有無障礙廁所：</label>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="toilet-accessible" value="yes"> 是</label>
+                        <label class="radio-label"><input type="radio" name="toilet-accessible" value="no"> 否</label>
+                    </div>
+                </div>
+                <div class="question-item">
+                    <label class="question-label">3. 是否有人正在排隊：</label>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="toilet-queue" value="yes"> 是</label>
+                        <label class="radio-label"><input type="radio" name="toilet-queue" value="no"> 否</label>
+                    </div>
+                </div>
+                <div class="question-item">
+                    <label class="question-label">4. 其他：</label>
+                    <input type="text" class="input-line" placeholder="請輸入其他狀況...">
+                </div>
+            </div>
+
+            <div id="group-parking" class="report-group">
+                <div class="question-item">
+                    <label class="question-label">1. 是否有電動車充電樁：</label>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="park-ev" value="yes"> 是</label>
+                        <label class="radio-label"><input type="radio" name="park-ev" value="no"> 否</label>
+                    </div>
+                </div>
+                <div class="question-item">
+                    <label class="question-label">2. 目前是否有空位：</label>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="park-space" value="yes"> 是</label>
+                        <label class="radio-label"><input type="radio" name="park-space" value="no"> 否</label>
+                    </div>
+                </div>
+                <div class="question-item">
+                    <label class="question-label">3. 其他：</label>
+                    <input type="text" class="input-line" placeholder="請輸入其他狀況...">
+                </div>
+            </div>
+
+            <div id="group-water" class="report-group">
+                <div class="question-item">
+                    <label class="question-label">1. 是否缺水：</label>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="water-empty" value="yes"> 是</label>
+                        <label class="radio-label"><input type="radio" name="water-empty" value="no"> 否</label>
+                    </div>
+                </div>
+                <div class="question-item">
+                    <label class="question-label">2. 是否提供冰水：</label>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="water-cold" value="yes"> 是</label>
+                        <label class="radio-label"><input type="radio" name="water-cold" value="no"> 否</label>
+                    </div>
+                </div>
+                <div class="question-item">
+                    <label class="question-label">3. 是否提供熱水：</label>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="water-hot" value="yes"> 是</label>
+                        <label class="radio-label"><input type="radio" name="water-hot" value="no"> 否</label>
+                    </div>
+                </div>
+                <div class="question-item">
+                    <label class="question-label">4. 其他：</label>
+                    <input type="text" class="input-line" placeholder="請輸入其他狀況...">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">確認送出</button>
+        </form>
+    </div>
+
+    <div id="successModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <i class="fas fa-check-square modal-icon"></i>
+                <span class="modal-title">回報成功</span>
+            </div>
+            <div style="color: #666; line-height: 1.5;">
+                感謝您的回報～ <br>我們會盡快處理。
+            </div>
+            <div class="modal-footer">
+                <a href="index.html" class="modal-close-btn">關閉</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 切換回報種類
+        function switchType(type) {
+            // 1. 移除所有按鈕的 active 狀態
+            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+            // 2. 將被點擊的按鈕加上 active
+            event.currentTarget.classList.add('active');
+            
+            // 3. 隱藏所有表單區塊
+            document.querySelectorAll('.report-group').forEach(group => group.style.display = 'none');
+            // 4. 顯示對應的表單區塊
+            document.getElementById('group-' + type).style.display = 'block';
+        }
+
+        // 送出表單 -> 顯示彈出視窗
+        document.getElementById('reportForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // 阻止表單真的送出 (避免頁面刷新)
+            document.getElementById('successModal').style.display = 'flex';
+        });
+    </script>
+
+</body>
+</html>
