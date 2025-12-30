@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>新增地點</title>
     <style>
-        /* --- 全域設定 --- */
+        /* --- 這裡都沒動，維持原本的漂亮介面 --- */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: #f7f9fc;
@@ -24,11 +24,10 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            position: relative; /* 為了切換內容定位用 */
-            min-height: 400px; /* 保持卡片高度，避免內容切換時閃爍 */
+            min-height: 400px; 
+            position: relative;
         }
 
-        /* --- 頂部導覽與標題 --- */
         .nav-back {
             text-decoration: none;
             color: #666;
@@ -44,7 +43,6 @@
             margin-bottom: 30px;
         }
 
-        /* --- 表單區塊設計 --- */
         .form-group { margin-bottom: 25px; }
 
         .label-title {
@@ -55,7 +53,7 @@
             font-size: 16px;
         }
 
-        /* 1. Radio Buttons */
+        /* 選項樣式 */
         .radio-group { display: flex; gap: 15px; flex-wrap: wrap; }
         .radio-group input[type="radio"] { display: none; }
         .radio-label {
@@ -77,7 +75,7 @@
             box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
         }
 
-        /* 2. 地址輸入與 GPS */
+        /* 輸入框與按鈕 */
         .input-group { display: flex; align-items: center; gap: 10px; }
         .input-line {
             flex: 1;
@@ -102,7 +100,7 @@
             white-space: nowrap;
         }
 
-        /* 3. 圖片上傳 */
+        /* 圖片上傳 */
         .image-upload-box {
             display: block; 
             border: 2px dashed #cbd5e0;
@@ -127,7 +125,7 @@
             object-fit: cover;
         }
 
-        /* 按鈕樣式 */
+        /* 送出按鈕 */
         .btn-submit {
             width: 100%;
             padding: 15px;
@@ -141,27 +139,23 @@
             margin-top: 30px;
             box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
             transition: transform 0.2s;
-            text-decoration: none; /* 給連結用 */
-            display: block; /* 讓連結變成區塊 */
-            text-align: center;
         }
         .btn-submit:active { transform: scale(0.98); }
 
-        /* --- 感謝訊息區塊 (預設隱藏) --- */
+        /* --- ✨ 這裡是你要求的文字樣式 ✨ --- */
         #successMessage {
-            display: none; /* 剛進來時不顯示 */
+            display: none; /* 一開始先藏起來 */
             text-align: center;
-            padding: 40px 10px;
+            padding-top: 50px;
         }
 
         .success-text {
-            color: #d9534f; /* 你截圖中的紅色字 */
+            color: #d93025; /* 類似你截圖的紅色 */
             font-size: 18px;
             line-height: 1.6;
             margin-bottom: 40px;
             font-weight: 500;
         }
-
     </style>
 </head>
 <body>
@@ -215,16 +209,12 @@
             <p class="success-text">
                 感謝您新增的地點，我們將在審查過後決定是否新增此地點~
             </p>
-            
-            <a href="index.html" class="btn-submit" style="background: #6c757d;">
-                回到主選單
-            </a>
         </div>
 
     </div>
 
     <script>
-        // 圖片預覽
+        // 圖片預覽功能
         function previewImage(event) {
             var reader = new FileReader();
             reader.onload = function(){
@@ -237,7 +227,7 @@
             }
         }
 
-        // GPS 定位
+        // GPS 定位功能
         function getGPS() {
             var inputField = document.getElementById('addressInput');
             var btn = document.querySelector('.btn-gps');
@@ -246,7 +236,6 @@
                 alert("瀏覽器不支援定位");
                 return;
             }
-
             btn.textContent = "定位中...";
             btn.disabled = true;
 
@@ -259,26 +248,22 @@
                     setTimeout(() => { btn.textContent = "📍 定位"; btn.disabled = false; }, 2000);
                 },
                 function() {
-                    alert("無法取得位置，請確認 GPS 權限。");
-                    btn.textContent = "📍 定位";
+                    alert("無法取得位置");
                     btn.disabled = false;
                 }
             );
         }
 
-        // --- 關鍵修改：表單送出後的動作 ---
+        // --- 這裡控制顯示那段紅字 ---
         document.getElementById('addForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // 阻止瀏覽器重新整理
+            e.preventDefault(); // 1. 阻止網頁重整
 
-            // 1. 隱藏表單和標題
+            // 2. 把表單和標題隱藏起來
             document.getElementById('addForm').style.display = 'none';
             document.getElementById('pageTitle').style.display = 'none';
 
-            // 2. 顯示感謝訊息
+            // 3. 把那段感謝文字顯示出來
             document.getElementById('successMessage').style.display = 'block';
-
-            // 3. (選用) 將畫面捲動到最上方，確保使用者看到訊息
-            window.scrollTo(0, 0);
         });
     </script>
 
