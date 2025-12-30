@@ -6,7 +6,7 @@
     <title>問題回報</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* --- 全域設定 (與之前保持一致) --- */
+        /* --- 全域設定 --- */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: #f7f9fc;
@@ -49,7 +49,7 @@
         .type-selector {
             display: flex;
             gap: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 20px; /* 稍微縮小間距 */
             justify-content: center;
         }
         
@@ -74,6 +74,39 @@
             color: white;
             border-color: #007bff;
             box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        /* --- 新增：地點輸入框樣式 --- */
+        .location-input-box {
+            background: #f8f9fa;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .location-label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .location-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box; /* 確保 padding 不會撐爆寬度 */
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .location-input:focus {
+            border-color: #007bff;
+            background: white;
         }
 
         /* --- 問題列表樣式 --- */
@@ -241,6 +274,11 @@
         </div>
 
         <form id="reportForm">
+            
+            <div class="location-input-box">
+                <label class="location-label"><i class="fas fa-map-marker-alt"></i> 地點名稱 / 資訊</label>
+                <input type="text" class="location-input" placeholder="例如：市民大道地下停車場" required>
+            </div>
             
             <div id="group-toilet" class="report-group" style="display: block;">
                 <div class="question-item">
