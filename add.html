@@ -1,1 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增地點</title>
+    <style>
+        /* --- 全域設定：讓字體好看一點 --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f7f9fc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
 
+        /* --- 卡片式容器：模仿 App 的感覺 --- */
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 400px; /* 手機版寬度限制 */
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); /* 柔和陰影 */
+        }
+
+        /* --- 頂部導覽 --- */
+        .nav-back {
+            text-decoration: none;
+            color: #666;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .nav-back:hover { color: #007bff; }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* --- 表單區塊設計 --- */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .label-title {
+            display: block;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        /* --- 1. 選項按鈕 (Radio Buttons) --- */
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* 隱藏原本醜醜的圓圈，改用 Label 做樣式 */
+        .radio-group input[type="radio"] {
+            display: none;
+        }
+
+        .radio-label {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        /* 當被選中時的樣式 */
+        .radio-group input[type="radio"]:checked + .radio-label {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        /* --- 2. 文字輸入框 (底線風格) --- */
+        .input-line {
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid #ccc;
+            padding: 10px 0;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+            background: transparent;
+        }
+
+        .input-line:focus {
+            border-bottom-color: #007bff;
+        }
+
+        /* --- 3. 圖片上傳區 (虛線框) --- */
+        .image-upload-box {
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s;
+            background-color: #f8fafc;
+        }
+
+        .image-upload-box:hover {
+            background-color: #eef2f7;
+            border-color: #007bff;
+        }
+
+        .icon-placeholder {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .upload-text {
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* 隱藏原本的 file input */
+        #file-upload {
+            display: none;
+        }
+
+        /* 預覽圖片用 */
+        #preview-img {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: none; /* 預設隱藏 */
+        }
+
+        /* --- 確認按鈕 --- */
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98); /* 點擊時縮一下 */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="index.html" class="nav-back">← 回到主選單</a>
+
+        <h2>新增地點</h2>
+
+        <form id="addForm">
+            <div class="form-group">
+                <label class="label-title">1. 請選擇新增的地點類型：</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="type" value="toilet">
+                        <span class="radio-label">🚻 廁所</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="type" value="parking">
+                        <span class="radio-label">🅿️ 停車位</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="type" value="water">
+                        <span class="radio-label">🚰 飲水機</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="label-title">2. 請輸入新增地點的地址：</label>
+                <input type="text" class="input-line" placeholder="例如：行政大樓一樓右側" required>
+            </div>
+
+            <div class="form-group">
+                <label class="label-title">3. 請選擇新增地點的圖片：</label>
+                <label for="file-upload" class="image-upload-box">
+                    <span class="icon-placeholder">📷</span>
+                    <span class="upload-text">點擊上傳照片</span>
+                </label>
+                <input type="file" id="file-upload" accept="image/*" onchange="previewImage(event)">
+                
+                <img id="preview-img" src="" alt="圖片預覽">
+            </div>
+
+            <button type="submit" class="btn-submit">確認新增</button>
+        </form>
+    </div>
+
+    <script>
+        // 這段程式碼是用來顯示使用者選取的圖片預覽
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function(){
+                var output = document.getElementById('preview-img');
+                output.src = reader.result;
+                output.style.display = 'block'; // 顯示圖片
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        // 當表單提交時（因為還沒有後端資料庫，先用彈跳視窗模擬）
+        document.getElementById('addForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // 阻止頁面重新整理
+            alert("✅ 資料已送出！\n(目前是展示模式，資料尚未真的存入資料庫)");
+            // 可以在這裡加程式碼跳轉回首頁
+            // window.location.href = "index.html";
+        });
+    </script>
+
+</body>
+</html>
